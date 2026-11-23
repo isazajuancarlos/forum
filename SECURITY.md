@@ -20,9 +20,16 @@ notes are kept here deliberately, as a record of the review.
 
 ## Known remaining items (documented, not yet changed)
 
-- **`get_choco` uses GET with a side effect** (inserts a "chocolate" like) and is
-  therefore not covered by CSRF protection. It should be a POST with a CSRF
-  token; left as-is here to avoid changing the front-end JS that calls it.
+- **"Chocolate" likes (`get_choco`) hardened (fixed).** Now POST-only with a CSRF
+  token (front-end AJAX updated to send it), and the server rejects likes on your
+  own messages and duplicate likes — the UI gate is no longer the only control.
+- **Featured-topic flag is admin-only (fixed).** `guardar_tema` computes
+  `destacado = ... and es_admin()`, so a non-admin can't feature a topic by
+  posting the field.
+- **Password change requires the current password (fixed).** `guardar_perfil`
+  verifies the current password with `check_password_hash` before changing it.
+  *Remaining:* session should be rotated on login / password change (Flask-Session
+  filesystem backend needs this done explicitly).
 - **Admin authorization is by role, not name (fixed).** `es_admin()` now checks
   a server-controlled `usuario.is_admin` column (fail-closed: missing/false =
   not admin). The name is identity, not authorization. This also closes the

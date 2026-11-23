@@ -376,10 +376,8 @@ def crear_tema():
 @login_required
 def guardar_tema():
     try:
-        if request.form.getlist('destacado'):
-            sw = True
-        else:
-            sw = False
+        # Solo un admin puede marcar un tema como destacado.
+        sw = bool( request.form.getlist('destacado') ) and es_admin()
         c = '''insert into tema
         ( fecha, titulo, vista, destacado, foro_id, usuario_id ) values
         ( %s, %s, %s, %s, %s, %s )
@@ -736,7 +734,11 @@ def guardar_perfil():
     icono = request.form['icono']
     password = request.form.get('password', '')
     if password:
-        # Solo se recifra la contraseña si se escribió una nueva.
+        # Cambiar la contraseña exige verificar la ACTUAL (evita que un CSRF o una
+        # sesión abierta sin dueño cambie la clave). Solo se recifra si coincide.
+        actual = request.form.get('actual', '')
+        if not check_password_hash( current_user.password, actual ):
+            return redirect( url_for('bp.perfil') )
         c = 'update usuario set password = %s, firma = %s, icono = %s where id = %s'
         set_dat( c, [ generate_password_hash( password ), firma, icono, current_user.id ] )
     else:
@@ -793,15 +795,20 @@ def guardar_categoria():
 
 @login_required
 def get_choco():
-    mensaje = request.args.get('mensaje')
-    div = request.args.get('div')
-    c = 'insert into chocolate(usuario_id, mensaje_id)values(%s, %s)'
-    set_dat( c, [ current_user.id, mensaje ] )
+    # Acción de estado: solo por POST con token CSRF (lo valida CSRFProtect).
+    mensaje = request.form.get('mensaje')
+    div = request.form.get('div')
+    dueno = get_one( 'select usuario_id from mensaje where id = %s', [ mensaje ] )
+    # No se puede dar "me gusta" al propio mensaje...
+    if dueno and str( dueno['usuario_id'] ) != str( current_user.id ):
+        # ...ni votar dos veces (uno por usuario y mensaje).
+        ya = get_one(
+            'select count(id) as n from chocolate where mensaje_id = %s and usuario_id = %s',
+            [ mensaje, current_user.id ] )
+        if not ya or ya['n'] == 0:
+            set_dat( 'insert into chocolate(usuario_id, mensaje_id)values(%s, %s)',
+                     [ current_user.id, mensaje ] )
     c = 'select count(id) as contador from chocolate where mensaje_id = %s'
     choco = get_one( c, [ mensaje ] )
-    if not choco:
-        choco = 0
-    else:
-        choco = choco['contador']
-    choco = { "cont":choco, "div":div }
-    return choco
+    choco = choco['contador'] if choco else 0
+    return { "cont": choco, "div": div }

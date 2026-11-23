@@ -45,7 +45,8 @@ class frm_titulo( FlaskForm ):
     submit = SubmitField( 'actualizar' )
 
 class frm_perfil( FlaskForm ):
-    password = PasswordField( 'contraseña' )  # opcional: vacío = no cambiar
+    password = PasswordField( 'nueva contraseña' )  # opcional: vacío = no cambiar
+    actual = PasswordField( 'contraseña actual' )   # requerida solo para cambiar la contraseña
     firma = StringField( 'firma', [ InputRequired() ] )
     icono = StringField( 'icono', [ InputRequired() ] )
     submit = SubmitField( 'actualizar' )

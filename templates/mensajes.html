@@ -105,9 +105,9 @@
         event.preventDefault();
         let valor = $("#id_{{ mensajes['mensaje_id'][indice] }}").val();
         $.ajax({
-          type: 'GET',
+          type: 'POST',
           url: '/get_choco',
-          data: { mensaje: valor, div: "#div_{{ mensajes['mensaje_id'][indice] }}" },
+          data: { mensaje: valor, div: "#div_{{ mensajes['mensaje_id'][indice] }}", csrf_token: "{{ csrf_token() }}" },
           dataType: 'json'
         })
           .done(function( data ) {
