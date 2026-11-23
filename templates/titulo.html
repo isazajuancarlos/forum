@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+{% endblock %}
+
+{% block contenido %}
+	<div class="row align-items-center">
+		<div class="col">
+			<form action = "/actualizar_titulo" method = "POST">
+				{{ form.csrf_token }}
+				{{ form.tema }}
+				<div class="form-floating">
+					{{ form.titulo( class="form-control" ) }}
+					{{ form.titulo.label }}
+				</div>
+				<hr>
+				{{ form.destacado }}&nbsp{{ form.destacado.label }}
+				<hr>
+				<div class="d-grid gap-2">
+			   		{{ form.submit( class="btn btn-dark sombra" ) }}
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

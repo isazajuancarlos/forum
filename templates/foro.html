@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+{% endblock %}
+
+{% block contenido %}
+  <h1>crear foros</h1>
+  <div class="border border-start-0 border-end-0">
+    <div class="row align-items-center">
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <h2>foros existentes</h2>
+        <hr>
+        <select class="form-select">
+          {% for f in foro %}
+            <option>{{ f.nombre }}</option>
+          {% endfor %}
+        </select>
+        <hr>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <form action="/guardar_foro" method="POST">
+          {{ form.csrf_token }}
+          <div class="form-floating">
+            {{ form.nombre( class="form-control" ) }}
+            {{ form.nombre.label }}
+          </div>
+          <div class="form-floating">
+            {{ form.imagen( class="form-control" ) }}
+            {{ form.imagen.label }}
+          </div>
+          <div class="form-floating">
+            {{ form.descripcion( class="form-control" ) }}
+            {{ form.descripcion.label }}
+          </div>
+          <div class="form-floating">
+            {{ form.categoria( class="form-control" ) }}
+            {{ form.categoria.label }}
+          </div>
+          <div class="form-floating">
+            {{ form.usuario( class="form-control" ) }}
+            {{ form.usuario.label }}
+          </div>
+          <hr>
+          <div class="d-grid gap-2">
+            {{ form.submit( class="btn btn-outline-dark" ) }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

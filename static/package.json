@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.6.4",
+    "jquery-ui": "^1.13.2",
+    "mdb-ui-kit": "^6.2.0",
+    "tinymce": "^6.4.0"
+  }
+}

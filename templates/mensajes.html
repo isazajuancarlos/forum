@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+	#cita { background-color: #EEE8AA; }
+  .tabulacion { margin-left: 10px; }
+  #contenido img { max-width: 100%; }
+  .titulo { background-color: lightblue; }
+{% endblock %}
+
+{% block barra %}
+  {% if current_user.is_authenticated %}
+    <li id="link">
+      <form action="/mensaje" method="POST">
+        {{ form.csrf_token }}
+        {{ form.p(value='responder') }}
+        {{ form.m(value=session['tema']) }}
+        {{ form.submit( class="sombra tabulacion btn btn-success", value="responder" ) }}
+      </form>
+    </li>
+    <li id="link">
+      <form action="/mensaje" method="POST">
+        {{ form.csrf_token }}
+        {{ form.p(value='citar') }}
+        {{ form.m(value=mensajes['mensaje_id'][indice]) }}
+        {{ form.submit( class="sombra tabulacion btn btn-danger", value='citar' ) }}
+      </form>
+    </li>
+  {% endif %}
+{% endblock %}
+
+{% block contenido %}
+  <h2><strong>{{ session['nombre'] }}</strong></h2>
+  <br>
+  <img src="{{ session['imagen'] }}" alt="" width="350px" height="175px">
+  <p><strong style="font-size: 1.3em;">moderador:&nbsp{{ session['usuario'] }}</strong></p>
+  {% for indice in range( 0, mensajes['usuario_id']|length ) %}
+  	<div class="row align-items-center">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="titulo">
+          <strong>{{ mensajes['tema_titulo'][indice] }}</strong>
+          <br>
+          <span>por: {{ mensajes['usuario_nombre'][indice] }}</span>
+          {% if mensajes['mensaje_fecha'][indice] %}
+            <span>creado: {{ mensajes['mensaje_fecha'][indice].strftime('%d/%b/%y %I:%M:%S %p') }}</span>
+          {% endif %}
+        </div>
+        {% if current_user.nombre == 'webmaster' or current_user.nombre == mensajes['usuario_nombre'][indice] %}
+          <form action="/mensaje" method="POST">
+            {{ form.csrf_token }}
+            {{ form.p(value='editar') }}
+            {{ form.m(value=mensajes['mensaje_id'][indice]) }}
+            <div class="d-grid gap-2">
+              {{ form.submit( class="sombra btn btn-warning", value='editar' ) }}
+            </div>
+          </form>
+        {% endif %}
+        {% if mensajes['cita'][indice] %}
+          {% set citas = mensajes['cita'][indice] %}
+          {% for indice in range( 0, citas['icono']|length ) %}
+            <div id="cita">
+              <img src="{{ citas['icono'][indice] }}" alt="" width="70px" height="70px">&nbsp<strong>{{ citas['usuario'][indice] }}&nbsp</strong>publicó:
+              <hr>
+              {{ citas['contenido'][indice]|limpio }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        <hr>
+        <div id="contenido">
+          {{ mensajes['mensaje_contenido'][indice]|limpio }}
+        </div>
+        <hr>
+        <div class="text-center">
+          <img src="{{ mensajes['usuario_firma'][indice] }}" width='auto' height='400px'>
+          <hr>
+        </div>
+      </div>
+      <div id="div_{{ mensajes['mensaje_id'][indice] }}" name="div_{{ mensajes['mensaje_id'][indice] }}" class="text-center">
+        {% if current_user.is_authenticated %} 
+          {% if mensajes['chocolate'][indice]|int == 0 and mensajes['usuario_id'][indice]|int != current_user.id|int %}
+            <form id="frm_{{ mensajes['mensaje_id'][indice] }}">
+              <input id="id_{{ mensajes['mensaje_id'][indice] }}" type="hidden" value="{{ mensajes['mensaje_id'][indice] }}">
+              <div class="d-grid gap-2">
+                <input class="sombra btn btn-warning" type="submit" value="me gusta">
+              </div>
+            </form>
+          {% else %}
+            &#127851;&nbsp;chocolates:&nbsp;{{ mensajes['chocolates'][indice] }}
+          {% endif %}
+        {% endif %}
+        {% if not current_user.is_authenticated %}
+          <img src="https://i.imgur.com/j3YxODV.png" alt="" width="30%">
+        {% endif %}
+        <hr>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  {% for indice in range( 0, mensajes['usuario_id']|length ) %}
+    if ( $("#frm_{{ mensajes['mensaje_id'][indice] }}").length > 0 )
+    {
+      $( "#frm_{{ mensajes['mensaje_id'][indice] }}" ).submit(function( event )
+      {
+        event.preventDefault();
+        let valor = $("#id_{{ mensajes['mensaje_id'][indice] }}").val();
+        $.ajax({
+          type: 'GET',
+          url: '/get_choco',
+          data: { mensaje: valor, div: "#div_{{ mensajes['mensaje_id'][indice] }}" },
+          dataType: 'json'
+        })
+          .done(function( data ) {
+            $(data.div).html( '&#127851;&nbsp;chocolates:&nbsp;' + data.cont );
+          });
+      });
+    }
+  {% endfor %}
+
+{% endblock %}

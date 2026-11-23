@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+  .tabulacion { margin-left: 10px; }
+{% endblock %}
+
+{% block contenido %}
+  <div class="row align-items-center">
+    <div class="col-lg-6 col-md-6 d-none d-sm-block">
+      <img class="sombra" src="{{ session['imagen'] }}" alt="imagen" width="400px" height="200px">
+      <br>
+      <strong style="font-size: 1.3em;">moderador:&nbsp{{ session['usuario'] }}</strong>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+      <h1>{{ session['nombre'] }}</h1>
+      <br>
+      <strong style="font-size: 1.3em;">{{ session['descripcion'] }}</strong>
+    </div>
+  </div>
+  <hr>
+  <div class="row align-items-center">
+    <div class="row align-items-center">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        <strong>temas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>respuestas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>vistas</strong>
+      </div>
+      <div class="col-lg-4 col-md-4 d-none d-sm-block">
+        <strong>ultimo mensaje</strong>
+      </div>
+    </div>
+  </div>
+  <hr>
+  {% for indice in range( 0, temas['id']|length ) %}
+    <div class="row align-items-center">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        <form action="/mensajes" method="POST">
+          {{ form.csrf_token }}
+          {{ form.p(value=temas['id'][indice]) }}
+          <input id="m" name="m" type="hidden" value="{{ temas['id'][indice] }}">
+          <div class="d-grid gap-2">
+          {% if temas['titulo'][indice]|length > 40 %}
+            {{ form.submit( class="sombra btn btn-dark", value=temas['titulo'][indice][0:39] ) }}
+          {% else %}
+            {{ form.submit( class="sombra btn btn-dark", value=temas['titulo'][indice] ) }}
+          {% endif %}
+          </div>
+        </form>
+        {% if current_user.nombre == 'webmaster' or current_user.nombre == temas['nombre'][indice] %}
+          <form action="/titulo" method="POST">
+            {{ form.csrf_token }}
+            {{ form.p(value=temas['id'][indice]) }}
+            <div class="d-grid gap-2">
+              {{ form.submit( class="sombra btn btn-warning", value='editar' ) }}
+            </div>
+          </form>
+        {% endif %}
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        {{ temas['respuestas'][indice] }}
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        {{ temas['vista'][indice] }}
+      </div>
+      <div class="col-lg-4 col-md-4 d-none d-sm-block">
+        <div class="row text-start align-items-center">
+          <div class="col">
+            <img src="{{ temas['ultimo_icono'][indice] }}" alt="icono" width="70px" height="70px"> {{ temas['ultimo_nombre'][indice] }}
+          </div>
+          <div class="col">
+            {{ temas['ultimo_fecha'][indice] }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  var html = document.documentElement;
+
+  $( "#up" ).click(function() {
+    html.scrollTop = 0;
+  });
+
+  $( "#down" ).click(function() {
+    html.scrollTop = html.scrollHeight;
+  });
+{% endblock %}

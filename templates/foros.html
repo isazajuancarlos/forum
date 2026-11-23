@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+  {% for indice in range( 0, datos['categoria']|length ) %}
+    <h1><strong>{{ datos['categoria'][indice] }}</strong></h1>
+    <hr>
+    {% for f in datos['foro'][indice] %}
+      <div class="row align-items-center">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+          <form action="/temas" method="POST">
+            {{ form.csrf_token }}
+            {{ form.p( value=f.id ) }}
+            <div class="d-grid gap-2">
+              {% if f.nombre|length > 40 %}
+                {{ form.submit( class="btn btn-dark sombra", value = f.nombre[0:39]|lower ) }}
+              {% else %}
+                {{ form.submit( class="btn btn-dark sombra", value = f.nombre|lower ) }}
+              {% endif %}
+            </div>
+          </form>
+        </div>
+        <div class="col-lg-2 col-md-3 d-none d-sm-block">
+          <strong>temas:</strong> {{ f.num_tema }}
+        </div>
+        <div class="col-lg-2 col-md-2 d-none d-sm-block">
+          <strong>mensajes:</strong> {{ f.num_mensaje }}
+        </div>
+        <div class="col-lg-5 col-md-5 d-none d-sm-block">
+          <strong>último tema:</strong>
+          <div class="row text-start align-items-center">
+            <div class="col">
+              <img src="{{ f.icono }}" alt="icono" width="40px" height="40px"> {{ f.usuario }}
+            </div>
+            <div class="col">
+              {% if f.titulo %}
+                {% if f.titulo|length > 20 %}
+                  {{ f.titulo[0:19]|lower }}
+                {% else %}
+                  {{ f.titulo|lower }}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="col">
+              {% if f.fecha %}
+                {{ f.fecha.strftime('%d/%b/%y %I:%M %p') }}
+              {% else %}
+                0
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    {% endfor %}
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+  <div class="row align-items-center">
+    <div class="col-6 text-center">
+      <img class="img-fluid" src="{{ current_user.firma }}" alt="superforo" width="50%" height="50%">
+      <hr>
+      <img class="img-fluid" src="{{ current_user.icono }}" alt="superforo" width="50px" height="50px">
+      <br>
+      fecha de inscripcion: {{ current_user.fecha.strftime('%d/%b/%y %I:%M:%S %p') }}
+      <br>
+      {% if estado %}
+        mensajes: {{ estado[0] }}
+        <br>
+        chocolates: {{ estado[1] }}
+        <br>
+        <img id="anillo" src="{{ url_for('static', filename=estado[2]) }}" alt="" width="70px" height="50px">
+        {{ estado[3] }}
+      {% endif %}
+      <hr>
+    </div>
+    <div class="col-6 text-center">
+      <hr>
+      <h2>cambiar datos de usuario</h2>
+      <form action = "/guardar_perfil" method="POST">
+        {{ form.csrf_token }}
+        <div class="form-floating">
+          {{ form.password( class="form-control" ) }}
+          {{ form.password.label }}
+        </div>
+        <div class="form-floating">
+          {{ form.firma( class="form-control" ) }}
+          {{ form.firma.label }}
+        </div>
+        <div class="form-floating">
+          {{ form.icono( class="form-control" ) }}
+          {{ form.icono.label }}
+        </div>
+        <hr>
+        <div class="d-grid gap-2">
+          {{ form.submit( class="sombra btn btn-dark" ) }}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

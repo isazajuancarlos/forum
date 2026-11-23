@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Conjunto de los mejores foros de internet, Medellín, Cali, Cocina, Metafísica" />
+    <meta property="og:description" content="Foros Cali, Medellín, Reflexiones, Metafísica, Banda Mexicana, Baladas y Boleros, Salud, Cocina, Jardinería, Lucero y Fernando, Comadres y Compadres, Diseño Gráfico" />
+    <title>uniforos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/font-awesome/css/font-awesome.min.css') }}" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/mdb-ui-kit/css/mdb.min.css') }}" crossorigin="anonymous">
+    <link type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" rel="shortcut icon">
+    <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/jquery-ui/dist/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/mdb-ui-kit/js/mdb.min.js') }}"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2737516496795002" crossorigin="anonymous"></script>
+    {% block librerias %}
+    {% endblock %}
+    <style>
+      body { background-color: #ffe766; color: black; }
+      nav {  background-color: lightslategray; }
+      .sombra { box-shadow: 0px 10px 14px -7px black; }
+      .container-fluid{ padding-top: 10px; }
+      #link{ padding-right: 10px; padding-bottom: 10px; }
+      {% block estilos %}
+      {% endblock %}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary sombra sticky-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/"><img src="https://i.imgur.com/VthJS3G.png" alt="logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav text-center">
+            {% if current_user.is_authenticated %}
+              <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.perfil') }}">perfil</a></li>
+              <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.foros') }}">foros</a></li>
+              {% if 'foro' in session %}
+                <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.temas') }}">temas</a></li>
+                <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.mistemas') }}">mis temas</a></li>
+              {% endif %}
+              {% if current_user.nombre == 'webmaster' %}
+                <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.crear_foro') }}">crear foros</a></li>
+                <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.mistemas') }}">mis temas</a></li>
+              {% endif %}
+              <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.cerrar_sesion') }}">cerrar sesion</a></li>
+            {% else %}
+              <li id="link"><a class="btn btn-warning sombra" href="{{ url_for('bp.iniciar') }}">iniciar sesion</a></li>
+            {% endif %}
+            {% block barra %}
+            {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid text-center">
+      {% block contenido %}
+      {% endblock %}
+    </div>
+    <button id="up" style="position: fixed; bottom: 60px; right: 20px;" type="button" class="sombra btn btn-dark btn-floating">
+      <i class="fa fa-arrow-up"></i>
+    </button>
+    <button id="down" style="position: fixed; bottom: 20px; right: 20px;" type="button" class="sombra btn btn-dark btn-floating">
+      <i class="fa fa-arrow-down"></i>
+    </button>
+    <script>
+      var html = document.documentElement;
+      $( "#up" ).click(function() {
+        html.scrollTop = 0;
+      });
+      $( "#down" ).click(function() {
+        html.scrollTop = html.scrollHeight;
+      });
+      {% block scripts %}
+      {% endblock %}
+    </script>
+  </body>
+</html>

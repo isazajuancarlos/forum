@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+{% endblock %}
+
+{% block contenido %}
+  <h1>crear categorias</h1>
+  <div class="border border-start-0 border-end-0">
+    <div class="row align-items-center">
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <h2>categorias existentes</h2>
+        <hr>
+        <select class="sombra form-select">
+        {% for c in categoria %}
+          <option>{{ c['nombre'] }}</option>
+        {% endfor %}
+        </select>
+        <hr>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <form action="/guardar_categoria" method="POST">
+          {{ form.csrf_token }}
+          <div class="form-floating">
+            {{ form.nombre( class="sombra form-control" ) }}
+            {{ form.nombre.label }}
+            <hr>
+            <div class="d-grid gap-2">
+              {{ form.submit( class="sombra btn btn-primary" ) }}
+            </div>
+            <hr>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

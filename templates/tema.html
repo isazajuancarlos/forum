@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block librerias %}
+  <script src="{{ url_for('static', filename='node_modules/tinymce/tinymce.min.js') }}"></script>
+{% endblock %}
+
+{% block estilos %}
+{% endblock %}
+
+{% block contenido %}
+  <div class="row align-items-center">
+    <div class="col">
+      <form action = "/guardar_tema" method = "POST">
+        {{ form.csrf_token }}
+        {{ form.foro }}
+        <div class="form-floating">
+          {{ form.titulo( class="sombra form-control" ) }}
+          {{ form.titulo.label }}
+        </div>
+        <hr>
+        {{ form.destacado( class="sombra form-check-input" ) }}&nbsp
+        <strong>{{ form.destacado.label( class="form-check-label" ) }}</strong>
+        <hr>
+        {{ form.contenido( class="sombra form-control" ) }}
+        <hr>
+        <div class="d-grid gap-2">
+          {{ form.submit( class="btn btn-dark sombra" ) }}
+        </div>
+        <hr>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  tinymce.init({
+    selector: '#contenido',
+    min_height: 400,
+    max_height: 800,
+    plugins: 'youtube image quickbars media emoticons',
+    toolbar: 'undo redo bold italic underline strikethrough fontselect fontsizeselect formatselect alignleft aligncenter alignright alignjustify forecolor backcolor removeformat charmap emoticons insertfile quickimage image youtube media',
+    menubar: false,
+    extended_valid_elements: "+iframe[src|width|height|name|align|class]",
+    emoticons_database: 'emojiimages',
+    content_style: 'img {max-width: 100%;}',
+    media_live_embeds: true
+    });
+{% endblock %}

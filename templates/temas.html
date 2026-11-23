@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+  .tabulacion { margin-left: 10px; }
+{% endblock %}
+
+{% block barra %}
+  {% if current_user.is_authenticated %}
+    <li id="link">
+      <form action="/crear_tema" method="POST">
+        {{ form.csrf_token }}
+        {{ form.p(value=session['foro']) }}
+        {{ form.submit( class="sombra tabulacion btn btn-danger", value="nuevo tema" ) }}
+      </form>
+    </li>
+  {% endif %}
+{% endblock %}
+
+{% block contenido %}
+  <div class="row align-items-center">
+    <div class="col-lg-6 col-md-6 d-none d-sm-block">
+      <img class="sombra" src="{{ session['imagen'] }}" alt="imagen" width="400px" height="200px">
+      <br>
+      <strong style="font-size: 1.3em;">moderador:&nbsp{{ session['usuario'] }}</strong>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+      <h1>{{ session['nombre'] }}</h1>
+      <br>
+      <strong style="font-size: 1.3em;">{{ session['descripcion'] }}</strong>
+    </div>
+  </div>
+  <hr>
+	<div class="row align-items-center">
+    <h2 class="sombra">temas destacados</h2>
+		<div class="row align-items-center">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        <strong>temas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>respuestas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>vistas</strong>
+      </div>
+      <div class="col-lg-4 col-md-4 d-none d-sm-block">
+        <strong>ultimo mensaje</strong>
+      </div>
+    </div>
+    <hr>
+    {% for d in destacado %}
+      <div class="row align-items-center">
+        <div class="col-lg-4 col-md-4 col-sm-12">
+          <form action="/mensajes" method="POST">
+            {{ form.csrf_token }}
+            {{ form.p(value=d['id']) }}
+            <div class="d-grid gap-2">
+              {% if d['titulo']|length > 40 %}
+                {{ form.submit( class="sombra btn btn-dark", value=d['titulo'][0:39]|lower ) }}
+              {% else %}
+                {{ form.submit( class="sombra btn btn-dark", value=d['titulo']|lower ) }}
+              {% endif %}
+            </div>
+          </form>
+          {% if current_user.nombre == 'webmaster' or current_user.nombre == d['nombre'] %}
+            <form action="/titulo" method="POST">
+              {{ form.csrf_token }}
+              {{ form.p(value=d['id']) }}
+              <div class="d-grid gap-2">
+                {{ form.submit( class="sombra btn btn-warning", value='editar' ) }}
+              </div>
+            </form>
+          {% endif %}
+        </div>
+        <div class="col-lg-2 col-md-2 d-none d-sm-block">
+          {{ d['respuestas'] }}
+        </div>
+        <div class="col-lg-2 col-md-2 d-none d-sm-block">
+          {{ d['vista'] }}
+        </div>
+        <div class="col-lg-4 col-md-4 d-none d-sm-block">
+          <div class="row text-start align-items-center">
+            <div class="col">
+              <img src="{{ d['ultimo_icono'] }}" alt="icono" width="40px" height="40px"> {{ d['ultimo_nombre'] }}
+            </div>
+            <div class="col">
+              {{ d['ultimo_fecha'].strftime('%d/%b/%y %I:%M %p') }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    {% endfor %}
+    <h2 class="sombra">temas generales</h2>
+    <div class="row align-items-center">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        <strong>temas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>respuestas</strong>
+      </div>
+      <div class="col-lg-2 col-md-2 d-none d-sm-block">
+        <strong>vistas</strong>
+      </div>
+      <div class="col-lg-4 col-md-4 d-none d-sm-block">
+        <strong>ultimo mensaje</strong>
+      </div>
+    </div>
+    <hr>
+    {% for g in general %}
+      <div class="row align-items-center">
+        <div class="col-lg-4 col-md-4 col-sm-12">
+          <form action="/mensajes" method="POST">
+            {{ form.csrf_token }}
+            {{ form.p(value=g['id']) }}
+            <div class="d-grid gap-2">
+              {% if g['titulo']|length > 40 %}
+                {{ form.submit( class="btn btn-dark sombra", value=g['titulo'][0:39]|lower ) }}
+              {% else %}
+                {{ form.submit( class="btn btn-dark sombra", value=g['titulo']|lower ) }}
+              {% endif %}
+            </div>
+          </form>
+          {% if current_user.nombre == 'webmaster' or current_user.nombre == g['nombre'] %}
+            <form action="/titulo" method="POST">
+              {{ form.csrf_token }}
+              {{ form.p(value=g['id']) }}
+              <div class="d-grid gap-2">
+                {{ form.submit( class="sombra btn btn-warning", value='editar' ) }}
+              </div>
+            </form>
+          {% endif %}
+        </div>
+        <div class="col-lg-2 col-md-2 d-none d-sm-block">
+          {{ g['respuestas'] }}
+        </div>
+        <div class="col-lg-2 col-md-2 d-none d-sm-block">
+          {{ g['vista'] }}
+        </div>
+        <div class="col-lg-4 col-md-4 d-none d-sm-block">
+          <div class="row text-start align-items-center">
+            <div class="col">
+              <img src="{{ g['ultimo_icono'] }}" alt="icono" width="40px" height="40px"> {{ g['ultimo_nombre'] }}
+            </div>
+            <div class="col">
+              {{ g['ultimo_fecha'].strftime('%d/%b/%y %I:%M %p') }}
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+    {% endfor %}
+{% endblock %}

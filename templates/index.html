@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+{% endblock %}
+
+{% block contenido %}
+  {% if current_user.is_authenticated %}
+    <script>
+      window.location.href = "/foros";
+    </script>
+  {% endif %}
+  <h1><strong>ingreso de usuario</strong></h1>
+  <form action = "/ingresar" method = "POST">
+    {{ form.csrf_token }}
+    <div class="form-floating">
+      {{ form.correo(class="form-control") }}
+      {{ form.correo.label(class="form-label") }}   
+    </div>
+    <div class="form-floating">
+      {{ form.password(class="form-control") }}
+      {{ form.password.label(class="form-label") }}
+    </div>
+    <hr>
+    {{ form.submit(class="sombra btn btn-dark") }}
+    <a href = "/registro" class="sombra btn btn-dark">registrarse</a>
+  </form>
+{% endblock %}

@@ -1,0 +1,19 @@
+# Datos de sesión del servidor (contienen datos de usuarios reales — nunca al repo)
+flask_session/
+
+# Bytecode y cachés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entorno y secretos
+.env
+*.env
+venv/
+.venv/
+
+# Empaquetados
+*.zip
+
+# Backups de conversación del hook (contienen la sesión; nunca al repo)
+conversaciones/
