@@ -22,7 +22,10 @@ notes are kept here deliberately, as a record of the review.
 
 - **"Chocolate" likes (`get_choco`) hardened (fixed).** Now POST-only with a CSRF
   token (front-end AJAX updated to send it), and the server rejects likes on your
-  own messages and duplicate likes — the UI gate is no longer the only control.
+  own messages. Duplicates are prevented atomically (no check-then-insert TOCTOU)
+  by `INSERT IGNORE` backed by a `UNIQUE(usuario_id, mensaje_id)` constraint.
+  **Schema requirement:** add `UNIQUE KEY uq_choco (usuario_id, mensaje_id)` to
+  the `chocolate` table.
 - **Featured-topic flag is admin-only (fixed).** `guardar_tema` computes
   `destacado = ... and es_admin()`, so a non-admin can't feature a topic by
   posting the field.

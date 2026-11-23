@@ -799,15 +799,12 @@ def get_choco():
     mensaje = request.form.get('mensaje')
     div = request.form.get('div')
     dueno = get_one( 'select usuario_id from mensaje where id = %s', [ mensaje ] )
-    # No se puede dar "me gusta" al propio mensaje...
+    # No se puede dar "me gusta" al propio mensaje. El duplicado lo impide de forma
+    # ATÓMICA (sin TOCTOU) la restricción UNIQUE(usuario_id, mensaje_id) + INSERT
+    # IGNORE, no un "comprobar y luego insertar". Ver SECURITY.md (requisito de esquema).
     if dueno and str( dueno['usuario_id'] ) != str( current_user.id ):
-        # ...ni votar dos veces (uno por usuario y mensaje).
-        ya = get_one(
-            'select count(id) as n from chocolate where mensaje_id = %s and usuario_id = %s',
-            [ mensaje, current_user.id ] )
-        if not ya or ya['n'] == 0:
-            set_dat( 'insert into chocolate(usuario_id, mensaje_id)values(%s, %s)',
-                     [ current_user.id, mensaje ] )
+        set_dat( 'insert ignore into chocolate(usuario_id, mensaje_id)values(%s, %s)',
+                 [ current_user.id, mensaje ] )
     c = 'select count(id) as contador from chocolate where mensaje_id = %s'
     choco = get_one( c, [ mensaje ] )
     choco = choco['contador'] if choco else 0
